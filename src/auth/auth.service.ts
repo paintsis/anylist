@@ -9,31 +9,35 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
 
-    constructor(private readonly usersService : UsersService, private readonly _jwtService: JwtService){}
+    constructor(private readonly usersService: UsersService, private readonly _jwtService: JwtService) { }
 
 
-    private getJwtToken(userId: string){
-        return    this._jwtService.sign({ id: userId })
+    private getJwtToken(userId: string) {
+        return this._jwtService.sign({ id: userId })
     }
 
-    async singup(singupInput : SingupInput ) : Promise<AuthResponse>{
+    async singup(singupInput: SingupInput): Promise<AuthResponse> {
         //Todo: crear usuario
         const user = await this.usersService.create(singupInput)
         //Todo: crear jwt
         const token = this.getJwtToken(user.id)
-        return { token, user};
+        return { token, user };
     }
 
-async login( loginInput: LoginInput ):Promise<AuthResponse>{
-    const user = await this.usersService.findOne( loginInput.email );
+    async login(loginInput: LoginInput): Promise<AuthResponse> {
+        const user = await this.usersService.findOne(loginInput.email);
 
-    if(!bcrytp.compareSync(loginInput.password, user.password)) throw new BadRequestException('Email / Password do not match')
-    const token  = this.getJwtToken(user.id)
+        if (!bcrytp.compareSync(loginInput.password, user.password)) throw new BadRequestException('Email / Password do not match')
+        const token = this.getJwtToken(user.id)
 
-    return {
-        token,
-        user
+        return {
+            token,
+            user
+        }
     }
-}
-    
+
+    async revalidate(){}
+
+
+
 }
