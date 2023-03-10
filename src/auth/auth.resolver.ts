@@ -5,6 +5,9 @@ import { AuthResponse } from './dto/types/auth-response';
 import { LoginInput } from './dto/inputs/login.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGyard } from './guards/jwt-auth.guard';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import { ValidRoles } from './enums/valid-roles.enums';
 
 @Resolver()
 export class AuthResolver {
@@ -24,9 +27,11 @@ export class AuthResolver {
 
   @Query( ()=> AuthResponse, {name:'revalidate'} )
   @UseGuards(JwtAuthGyard)
-  async revalidateToken() : Promise<AuthResponse> {
+  async revalidateToken( @CurrentUser([ValidRoles.admin]) user: User  ) : Promise<AuthResponse> {
     throw new Error('')
     //return this.authService.revalidate();
   }
+
+
 
 }

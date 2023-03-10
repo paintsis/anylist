@@ -1,10 +1,12 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { SingupInput } from './dto/inputs/singup.input';
 import { AuthResponse } from './dto/types/auth-response';
 import { UsersService } from '../users/users.service';
 import { LoginInput } from './dto/inputs/login.input';
 import * as bcrytp from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { use } from 'passport';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -36,8 +38,24 @@ export class AuthService {
         }
     }
 
-    async revalidate(){}
+    async revalidateUser(id : string){
+        const user = await this.usersService.findOneByid(id)
+       if(!user.isActive) throw new UnauthorizedException('User is inactive')
+        delete user.password
+
+       return user;
+    }
+
+    revalidateToken(user: User) : AuthResponse{
+        const token = this.getJwtToken(user.id);
+        return {
+            token,
+            user
+        }
+    }
 
 
 
 }
+
+
