@@ -5,6 +5,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ValidRoles } from '../auth/enums/valid-roles.enums';
 
 @Injectable()
 export class UsersService {
@@ -27,8 +28,15 @@ export class UsersService {
     //return 'This action adds a new user';
   }
 
-  async findAll() : Promise<User[]> {
-    return this.userRepository.find();
+  async findAll( roles: ValidRoles[] ) : Promise<User[]> {
+    if(roles.length === 0) return this.userRepository.find();
+
+    //?? 
+    return this.userRepository.createQueryBuilder()
+    .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+    .setParameter('roles',roles)
+    .getMany()
+    ;
     //return [];
   }
 
@@ -65,8 +73,11 @@ async findOneByid(id: string){
     return `This action updates a #${id} user`;
   }
 
-  async remove(id: string): Promise<User> {
-    return ;
+  async block(id: string): Promise<User> {
+    const userToBlock = await this.findOneByid(id)
+    userToBlock.isActive = false;
+    return await this.userRepository.save(userToBlock);
+    //return ;
   }
 
   private handleDBErrors( error : any ) : never{
