@@ -29,7 +29,7 @@ export class UsersService {
   }
 
   async findAll( roles: ValidRoles[] ) : Promise<User[]> {
-    if(roles.length === 0) return this.userRepository.find();
+    if(roles.length === 0) return this.userRepository.find( { relations: { lastUpdateBy: true } } );
 
     //?? 
     return this.userRepository.createQueryBuilder()
@@ -69,13 +69,20 @@ async findOneByid(id: string){
   }
 }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+   async update(id: string, updateUserInput: UpdateUserInput, adminuser:User) {
+   try {
+      const user = await this.userRepository.preload({...updateUserInput});
+      user.lastUpdateBy = adminuser;
+      return await this.userRepository.save(user)
+   } catch (error) {
+      this.handleDBErrors(error)
+   }
   }
 
-  async block(id: string): Promise<User> {
+  async block(id: string, adminuser: User): Promise<User> {
     const userToBlock = await this.findOneByid(id)
     userToBlock.isActive = false;
+    userToBlock.lastUpdateBy = adminuser;
     return await this.userRepository.save(userToBlock);
     //return ;
   }

@@ -29,16 +29,15 @@ export class UsersResolver {
   }
 
 
-
-/*   @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
+   @Mutation(() => User)
+  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput, @CurrentUser() user: User) {
+    return this.usersService.update(updateUserInput.id, updateUserInput, user);
   }
- */
+ 
   @Mutation(() => User, {name: 'blockUser'})
   blockUser(@Args('id', { type: () => ID }) id: string,
   @CurrentUser([ValidRoles.admin]) user: User
   ) : Promise<User> {
-    return this.usersService.block(id);
+    return this.usersService.block(id, user);
   }
 }
