@@ -2,19 +2,23 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Item {
-  id: ID!
-  name: String!
-  quantity: Float!
-  quantityUnit: String
-}
-
 type User {
   id: ID!
   fullName: String!
   email: String!
   roles: [String!]!
   isActive: Boolean!
+  lastUpdateBy: User
+  items: [Item!]!
+  ItemCounter: Int!
+}
+
+type Item {
+  id: ID!
+  name: String!
+  quantityUnit: String
+  user: User!
+  ItemCounter: Int!
 }
 
 type AuthResponse {
@@ -23,11 +27,11 @@ type AuthResponse {
 }
 
 type Query {
-  items: [Item!]!
-  item(id: ID!): Item!
+  revalidate: AuthResponse!
   users(roles: [ValidRoles!] = []): [User!]!
   user(id: ID!): User!
-  revalidate: AuthResponse!
+  items: [Item!]!
+  item(id: ID!): Item!
 }
 
 enum ValidRoles {
@@ -37,27 +41,15 @@ enum ValidRoles {
 }
 
 type Mutation {
+  signup(signupIput: SingupInput!): AuthResponse!
+  login(loginInput: LoginInput!): AuthResponse!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  blockUser(id: ID!): User!
   createItem(createItemInput: CreateItemInput!): Item!
   updateItem(updateItemInput: UpdateItemInput!): Item!
 
   """Eliminacion de Item"""
   removeItem(id: String!): Item!
-  removeUser(id: ID!): User!
-  signup(signupIput: SingupInput!): AuthResponse!
-  login(loginInput: LoginInput!): AuthResponse!
-}
-
-input CreateItemInput {
-  name: String!
-  quantity: Float!
-  quantityUnit: String
-}
-
-input UpdateItemInput {
-  name: String
-  quantity: Float
-  quantityUnit: String
-  id: ID!
 }
 
 input SingupInput {
@@ -69,4 +61,24 @@ input SingupInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  password: String
+  id: ID!
+  roles: [ValidRoles!]
+  isActive: Boolean
+}
+
+input CreateItemInput {
+  name: String!
+  quantityUnit: String
+}
+
+input UpdateItemInput {
+  name: String
+  quantityUnit: String
+  id: ID!
 }

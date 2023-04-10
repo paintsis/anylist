@@ -10,6 +10,7 @@ import { ItemsModule } from './items/items.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -23,11 +24,11 @@ import { JwtService } from '@nestjs/jwt';
         plugins: [ApolloServerPluginLandingPageLocalDefault],
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         context({req }){
-          const token = req.headers.authorization?.replace('Bearer ','')
-          if( !token ) throw Error('token needed');
+          //const token = req.headers.authorization?.replace('Bearer ','')
+          //if( !token ) throw Error('token needed');
 
-          const payload = jwtService.decode(token);
-          if(payload) throw Error('Token not valid')
+          //const payload = jwtService.decode(token);
+          //if(payload) throw Error('Token not valid')
         }
       }),
    
@@ -52,7 +53,8 @@ import { JwtService } from '@nestjs/jwt';
      }), */
     ItemsModule,
     UsersModule,
-    AuthModule],
+    AuthModule,
+    SeedModule],
   controllers: [],
   providers: [],
 })

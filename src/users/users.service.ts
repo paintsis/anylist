@@ -10,7 +10,7 @@ import { ValidRoles } from '../auth/enums/valid-roles.enums';
 @Injectable()
 export class UsersService {
   private logger = new Logger('UserService');
-  constructor( @InjectRepository(User) private readonly userRepository: Repository<User>){}
+  constructor( @InjectRepository(User) private readonly userRepository: Repository<User>, ){}
 
   async create(signUpInput: SingupInput):Promise<User> {
       try {
@@ -87,6 +87,8 @@ async findOneByid(id: string){
     //return ;
   }
 
+ 
+  
   private handleDBErrors( error : any ) : never{
     if(error.code === '23505'){
       throw new BadRequestException(error.detail.replace('Key',''))
@@ -98,4 +100,6 @@ async findOneByid(id: string){
     this.logger.error(error);
     throw new InternalServerErrorException('Please check server log')
   }
+
+  
 }
