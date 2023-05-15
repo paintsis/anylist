@@ -50,6 +50,9 @@ type Mutation {
 
   """Eliminacion de Item"""
   removeItem(id: String!): Item!
+
+  """Ejecuta la construccion de la base de datos"""
+  executeSeed: Boolean!
 }
 
 input SingupInput {
